@@ -1,5 +1,5 @@
 # FOMO_nicla_balloon
-A NN-based purple/green balloon detection demo
+A NN-based purple/green balloon detection demo based on the FOMO (faster objects, more objects) architecture from [Edge Impulse](https://github.com/edgeimpulse). The NN is composed of 1 MobileNetV2 block and 2 CNN layers. The input image size to the MobileNet is set to 96 x 96. The network is successfully deployed on a Nicla Vision on QVGA resolution (shrunk to 96x96 before feeding to the NN) with a performance of ~15fps.
 
 ### ei_object_detection.py 
 * run this script to inspect the neural network-based detection in a real environment with a real camera
