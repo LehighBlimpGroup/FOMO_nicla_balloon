@@ -6,6 +6,7 @@ Here is a [demo video](https://github.com/Jarvis-X/FOMO_nicla_balloon/blob/main/
 
 ### ei_object_detection.py 
 * run this script to inspect the neural network-based detection in a real environment with a real camera
+* change LENS_TYPE accordingly
 
 ### niclavisionsettings.py
 * run this script to collect training data at the resolution of QVGA, in the format of a MJPEG video. Extract the individual frames using ffmpeg command `ffmpeg -i mjpegvideo.avi -vcodec copy frame%d.jpg`.
