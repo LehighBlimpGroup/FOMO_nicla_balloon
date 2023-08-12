@@ -6,53 +6,48 @@ sensor.reset()                         # Reset and initialize the sensor.
 sensor.set_pixformat(sensor.RGB565)    # Set pixel format to RGB565 (or GRAYSCALE)
 sensor.set_framesize(sensor.QVGA)      # Set frame size to QVGA (320x240)
 sensor.set_windowing((240, 240))       # Set 240x240 window.
-## lens types can affect the color settings
-LENS_TYPE = 2 # 0: original, no IR filter, 1: arducam, no IR filter, 2: wide angle, no RGB filter
+LENS_TYPE = 2
 if LENS_TYPE == 0:
-  sensor.set_auto_exposure(False)
-  sensor.set_auto_whitebal(False)
-  sensor.__write_reg(0xfe, 0b00000000) # change to registers at page 0
-  sensor.__write_reg(0x03, 0b00000000) # high bits of exposure control
-  sensor.__write_reg(0x04, 0b01100000) # low bits of exposure control
-  sensor.__write_reg(0xb0, 0b11010000) # global gain
-  sensor.__write_reg(0xad, 0b10001100) # R
-  sensor.__write_reg(0xae, 0b10000000) # G
-  sensor.__write_reg(0xaf, 0b10001110) # B
-  sensor.__write_reg(0xfe, 0b00000010) # change to registers at page 2
-  #sensor.__write_reg(0xd0, 0b00000000) # change global saturation,
-                                        # strangely constrained by auto saturation
-  sensor.__write_reg(0xd1, 0b01101100) # change Cb saturation
-  sensor.__write_reg(0xd2, 0b01001000) # change Cr saturation
-  sensor.__write_reg(0xd3, 0b01001000) # luma contrast
+    sensor.set_auto_exposure(False)
+    sensor.set_auto_whitebal(False)
+    sensor.__write_reg(0xfe, 0b00000000)
+    sensor.__write_reg(0x03, 0b00000000)
+    sensor.__write_reg(0x04, 0b11000000)
+    sensor.__write_reg(0xb0, 0b01001000)
+    sensor.__write_reg(0xad, 0b10000100)
+    sensor.__write_reg(0xae, 0b10000110)
+    sensor.__write_reg(0xaf, 0b10011000)
+    sensor.__write_reg(0xfe, 0b00000010)
+    sensor.__write_reg(0xd1, 0b10110000)
+    sensor.__write_reg(0xd2, 0b01001000)
+    sensor.__write_reg(0xd3, 0b01000100)
 elif LENS_TYPE == 1:
-  pass
+    pass
 elif LENS_TYPE == 2:
-  sensor.set_auto_exposure(False)
-  sensor.set_auto_whitebal(False)
-  sensor.__write_reg(0xfe, 0b00000000) # change to registers at page 0
-  sensor.__write_reg(0x03, 0b00000001) # high bits of exposure control
-  sensor.__write_reg(0x04, 0b10000000) # low bits of exposure control
-  sensor.__write_reg(0xb0, 0b01000000) # global gain
-  sensor.__write_reg(0xad, 0b10000110) # R
-  sensor.__write_reg(0xae, 0b10000110) # G
-  sensor.__write_reg(0xaf, 0b10001100) # B
-  
-  sensor.__write_reg(0xfe, 0b00000010) # change to registers at page 2
-  #sensor.__write_reg(0xd0, 0b00000000) # change global saturation,
-                                        # strangely constrained by auto saturation
-  sensor.__write_reg(0xd1, 0b10000000) # change Cb saturation
-  sensor.__write_reg(0xd2, 0b01001000) # change Cr saturation
-  sensor.__write_reg(0xd3, 0b01000000) # luma contrast
+    sensor.set_auto_exposure(False)
+    sensor.set_auto_whitebal(False)
+    sensor.__write_reg(0xfe, 0b00000000)
+    sensor.__write_reg(0x03, 0b00000000)
+    sensor.__write_reg(0x04, 0b11000000)
+    sensor.__write_reg(0xb0, 0b01100000)
+    sensor.__write_reg(0xad, 0b10001000)
+    sensor.__write_reg(0xae, 0b10010000)
+    sensor.__write_reg(0xaf, 0b10010000)
+    sensor.__write_reg(0xfe, 0b00000010)
+    sensor.__write_reg(0xd1, 0b10110000)
+    sensor.__write_reg(0xd2, 0b01110100)
+    sensor.__write_reg(0xd3, 0b01000000)
+sensor.skip_frames(time = 2000)
 
 sensor.skip_frames(time=2000)          # Let the camera adjust.
 
 net = None
 labels = None
-min_confidence = 0.5
+min_confidence = 0.8
 
 try:
     # load the model, alloc the model file on the heap if we have at least 64K free after loading
-    net = tf.load("trained.tflite", load_to_fb=uos.stat('trained.tflite')[6] > (gc.mem_free() - (64*1024)))
+    net = tf.load("trained.tflite", load_to_fb=uos.stat('trained.tflite')[6] > (gc.mem_free() - (32*1024)))
 except Exception as e:
     raise Exception('Failed to load "trained.tflite", did you copy the .tflite and labels.txt file onto the mass-storage device? (' + str(e) + ')')
 
@@ -71,7 +66,7 @@ clock = time.clock()
 while(True):
     clock.tick()
 
-    img = sensor.snapshot().crop(x_scale=0.4, y_scale=0.4)
+    img = sensor.snapshot()#.crop(x_scale=0.4, y_scale=0.4)
 
     # detect() returns all objects found in the image (splitted out per class already)
     # we skip class index 0, as that is the background, and then draw circles of the center
