@@ -8,7 +8,7 @@ sensor.set_framesize(sensor.QVGA)      # Set frame size to QVGA (320x240)
 sensor.set_windowing((240, 240))       # Set 240x240 window.
 ## lens types can affect the color settings
 LENS_TYPE = 2 # 0: original, no IR filter, 1: arducam, no IR filter, 2: wide angle, no RGB filter
-if LENS_TYPe == 0:
+if LENS_TYPE == 0:
   sensor.set_auto_exposure(False)
   sensor.set_auto_whitebal(False)
   sensor.__write_reg(0xfe, 0b00000000) # change to registers at page 0
